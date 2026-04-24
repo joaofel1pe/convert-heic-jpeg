@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Request, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 import pillow_heif
 import uuid
@@ -6,31 +7,38 @@ import io
 import os
 import requests
 
-app = FastAPI()
 
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # ou seu frontend ex: http://localhost:3000
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 pillow_heif.register_heif_opener()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_URL ="https://zykutzrqczcmsxevongl.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5a3V0enJxY3pjbXN4ZXZvbmdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MTU0MjAsImV4cCI6MjA3MTE5MTQyMH0.J3zV3hEpY51Ae-_84wZz60ovkur_3xtTKgWuqv06gYI"
 BUCKET = "drive-carmanager"
-API_KEY = os.getenv("API_KEY")
-
+API_KEY = "asd"
 
 async def verify_key(request: Request):
     key = request.headers.get("x-api-key")
-
+    print(f"Received API key: {key}")
     if not key or key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail="Unauthorizedeee")
 
 
 @app.post("/convert")
-async def convert(file: UploadFile = File(...), request: Request = None):
+async def convert(arquivo: UploadFile = File(...), request: Request = None):
+    print(dict(request.headers))
     await verify_key(request)
 
     file_id = str(uuid.uuid4())
     jpg_name = f"{file_id}.jpg"
 
-    content = await file.read()
+    content = await arquivo.read()
 
     heif_file = pillow_heif.read_heif(content)
     image = Image.frombytes(
