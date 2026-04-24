@@ -11,12 +11,7 @@ import requests
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://rmotors.carmanager.com.br",
-        "https://api.carmanager.com.br",
-        "https://convert.carmanager.com.br",
-        "http://localhost:4200"
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -28,17 +23,8 @@ SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJ
 BUCKET = "drive-carmanager"
 API_KEY = "asd"
 
-async def verify_key(request: Request):
-    key = request.headers.get("x-api-key")
-    print(f"Received API key: {key}")
-    if not key or key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorizedeee")
-
-
 @app.post("/convert")
 async def convert(arquivo: UploadFile = File(...), request: Request = None):
-    print(dict(request.headers))
-    await verify_key(request)
 
     file_id = str(uuid.uuid4())
     jpg_name = f"{file_id}.jpg"
