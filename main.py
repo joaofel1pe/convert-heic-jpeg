@@ -11,7 +11,12 @@ import requests
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ou seu frontend ex: http://localhost:3000
+    allow_origins=[
+        "https://rmotors.carmanager.com.br",
+        "https://api.carmanager.com.br",
+        "https://convert.carmanager.com.br",
+        "http://localhost:4200"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
